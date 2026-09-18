@@ -25,14 +25,15 @@ async function runTests() {
     assert.strictEqual(pageIsPastWindow(freshDated, sinceMs), false, 'Should not stop on fresh dated jobs');
     pass('Case 2: Does not stop on fresh dated jobs');
 
-    // Case 3: Mixed dated (stale) and undated jobs -> Should NOT stop (false)
-    // This is the bug fix: we must not stop if undated jobs are present.
+    // Case 3: Mixed dated (stale) and undated jobs -> Should STOP (true)
+    // This matches scan.md: we stop based on the oldest dated posting, 
+    // even if undated postings are present on the same page.
     const mixedJobs = [
       { postedAt: 100 },
       { postedAt: undefined }
     ];
-    assert.strictEqual(pageIsPastWindow(mixedJobs, sinceMs), false, 'Should not stop on mixed content (dated stale + undated)');
-    pass('Case 3: Does not stop on mixed content (Bug Fix Verified)');
+    assert.strictEqual(pageIsPastWindow(mixedJobs, sinceMs), true, 'Should stop on mixed content (dated stale + undated)');
+    pass('Case 3: Stops on mixed content (Dated stale + Undated)');
 
     // Case 4: All jobs are undated -> Should NOT stop (false)
     const allUndated = [
