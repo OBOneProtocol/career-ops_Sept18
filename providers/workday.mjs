@@ -244,6 +244,9 @@ export function pageIsPastWindow(pageJobs, sinceMs) {
   if (typeof sinceMs !== 'number') return false;
   const dated = pageJobs.map((j) => j.postedAt).filter((v) => typeof v === 'number');
   if (dated.length === 0) return false;
+  // Return false if there are undated jobs on this page, ensuring we don't early-stop 
+  // and miss subsequent undated postings.
+  if (dated.length < pageJobs.length) return false;
   return Math.min(...dated) < sinceMs - EARLY_STOP_MARGIN_MS;
 }
 
